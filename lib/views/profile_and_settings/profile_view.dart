@@ -1,0 +1,241 @@
+import 'dart:io';
+import 'package:flutter/material.dart';
+import 'package:samsar/constants/color_constants.dart';
+import 'package:samsar/widgets/app_button/app_button.dart';
+import 'package:samsar/widgets/image_holder/image_holder.dart';
+
+
+class ProfileView extends StatefulWidget {
+  final String name;
+  final String userName;
+  final String email;
+  final String mobileNo;
+  final String bio;
+  final String imageUrl;
+  final String street;
+  final String city;
+  const ProfileView(
+    {
+      super.key,
+      required this.name,
+      required this.userName,
+      required this.email,
+      required this.mobileNo,
+      required this.bio,
+      required this.imageUrl,
+      required this.street,
+      required this.city
+    }
+  );
+
+  @override
+  State<ProfileView> createState() => _ProfileViewState();
+}
+
+class _ProfileViewState extends State<ProfileView> {
+
+  bool isEditing = false;
+
+
+  File? profileImage;
+
+  String userName = '';
+  String email = '';
+  String phoneNo = '';
+  String bio = '';
+  String street = '';
+  String city = '';
+  String profilePicture = '';
+
+
+
+  late TextEditingController usernameController = TextEditingController(text: userName);
+  late TextEditingController emailController = TextEditingController(text: email);
+  late TextEditingController phoneController = TextEditingController(text: phoneNo);
+  late TextEditingController bioController = TextEditingController(text: bio);
+  late TextEditingController streetController = TextEditingController(text: street);
+  late TextEditingController cityController = TextEditingController(text: city);
+
+  @override
+  void initState() {
+    super.initState();
+
+    userName = widget.userName;
+    email = widget.email;
+    phoneNo = widget.mobileNo;
+    bio = widget.bio;
+    street = widget.street;
+    city = widget.city;
+    profilePicture = widget.imageUrl;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
+    final width = screenSize.width;
+    final height = screenSize.height;
+    
+    return Scaffold(
+      backgroundColor: whiteColor,
+
+      appBar: AppBar(
+        backgroundColor: whiteColor,
+        elevation: 0,
+        title: Text(
+          "My Profile",
+          style: TextStyle(
+            color: blackColor,
+            fontWeight: FontWeight.bold,
+            fontSize: 22,
+          ),
+        ),
+        centerTitle: true,
+      ),
+
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(vertical: 20),
+          child: Center(
+            child: Column(
+              children: [
+
+                SizedBox(height: height * 0.04),
+                Hero(
+                  tag: "image_bridge",
+                  child: ImageHolder(
+                    isEditable: true,
+                    imageUrl: profilePicture,
+                    onImageSelected: (File selectedImage) {
+                      setState(() {
+                        profileImage = selectedImage;
+                      });
+                    },
+                  )
+                ),
+
+                const SizedBox(height: 12),
+
+               
+                Text(
+                  widget.name,
+                  style: TextStyle(
+                    color: whiteColor,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 22,
+                  ),
+                ),
+                
+
+                const SizedBox(height: 8),
+
+                Divider(
+                  indent: width * 0.18,
+                  endIndent: width * 0.18,
+                  thickness: 1,
+                ),
+
+                const SizedBox(height: 20),
+
+               buildProfileField("Username", usernameController),
+                
+               
+               buildProfileField("Email", emailController),
+               
+              
+               buildProfileField("Phone No", phoneController),
+                
+               
+               buildProfileField("Bio", bioController),
+              
+                  
+              buildProfileField("Street", streetController),
+                
+             
+              buildProfileField("City", cityController),
+             
+              const SizedBox(height: 22),
+                AppButton(
+                  widthSize: 0.55,
+                  heightSize: 0.06,
+                  buttonColor: blueColor,
+                  text: isEditing ? "Save" : "Edit",
+                  textColor: whiteColor,
+                  textSize: 22,
+                  onPressed: () {
+                    setState(() {
+                      isEditing = !isEditing;
+
+                      
+
+                      if (!isEditing) {
+                        
+                        
+                      
+                      }
+                    });
+                  },
+                )
+
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget buildProfileField(String label, TextEditingController controller) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label,
+              style: TextStyle(
+                color: blueColor,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              )),
+          const SizedBox(height: 4),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            decoration: BoxDecoration(
+              color: whiteColor,
+              border: Border.all(color: Colors.grey.shade300),
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.shade100,
+                  blurRadius: 6,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: isEditing
+                ? TextField(
+                    controller: controller,
+                    style: TextStyle(
+                      color: blackColor,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    decoration: const InputDecoration(border: InputBorder.none),
+                  )
+                : Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    child: Text(
+                      controller.text,
+                      style: TextStyle(
+                        color: blackColor,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+          ),
+        ],
+      ),
+    );
+  }
+}
