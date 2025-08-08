@@ -43,3 +43,41 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Gradle wrapper jar (should be regenerated)
+android/gradle/wrapper/gradle-wrapper.jar
+
+# Build directories
+build/
+.dart_tool/
+.flutter-plugins-dependencies
+.flutter-plugins
+
+# Large files
+*.so
+*.apk
+*.aab
+*.dill
+*.dex
+*.jar
+*.zip
+*.cache
+
+# Debug/Release artifacts
+**/debug/
+**/release/
+**/profile/
+**/intermediates/
+**/outputs/
+**/generated/
+**/ephemeral/
+**/flutter_build/
+**/incremental/
+**/merged_native_libs/
+**/stripped_native_libs/
+**/compressed_assets/
+**/flutter_assets/
+**/apk/
+**/dex/
+**/lib/
+**/out/
