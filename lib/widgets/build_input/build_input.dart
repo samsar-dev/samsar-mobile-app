@@ -8,6 +8,7 @@ class BuildInput extends StatelessWidget {
   final String? Function(String?)? validator;
   final int maxLines;
   final TextInputType keyboardType;
+  final bool hasError;
 
   const BuildInput({
     super.key,
@@ -17,6 +18,7 @@ class BuildInput extends StatelessWidget {
     this.validator,
     this.maxLines = 1,
     this.keyboardType = TextInputType.text,
+    this.hasError = false,
   });
 
   @override
@@ -37,8 +39,44 @@ class BuildInput extends StatelessWidget {
               labelText: label,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(
+                  color: hasError ? Colors.red : Colors.grey,
+                  width: hasError ? 2.0 : 1.0,
+                ),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(
+                  color: hasError ? Colors.red : Colors.grey,
+                  width: hasError ? 2.0 : 1.0,
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(
+                  color: hasError ? Colors.red : Colors.blue,
+                  width: hasError ? 2.0 : 1.0,
+                ),
+              ),
+              errorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: const BorderSide(
+                  color: Colors.red,
+                  width: 2.0,
+                ),
+              ),
+              focusedErrorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: const BorderSide(
+                  color: Colors.red,
+                  width: 2.0,
+                ),
               ),
               contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              errorStyle: const TextStyle(
+                color: Colors.red,
+                fontSize: 12,
+              ),
             ),
           ),
         ),

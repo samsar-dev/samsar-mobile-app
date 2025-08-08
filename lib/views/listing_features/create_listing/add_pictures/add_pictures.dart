@@ -212,6 +212,7 @@ class _AddPicturesState extends State<AddPictures> {
                           onPressed: () {
 
                             final List<String> imagePaths = _images.map((img) => img.path).toList();
+                            print('AddPictures: Setting image paths: $imagePaths'); // Debug print
                             _listingInputController.setImages(imagePaths);
 
                             widget.isVehicles ? 

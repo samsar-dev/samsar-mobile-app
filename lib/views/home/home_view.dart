@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:samsar/constants/color_constants.dart';
@@ -54,8 +55,48 @@ class _HomeViewState extends State<HomeView> {
         if(_locationController.errorMessage.isNotEmpty) {
           return Scaffold(
             body: Center(
-              child: Text(_locationController.errorMessage.value)
-            )
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      _locationController.errorMessage.value,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 16, color: Colors.grey[700]),
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: _locationController.errorMessage.value.contains("permanently denied")
+                          ? () {
+                              // Open app settings if permissions are permanently denied
+                              Geolocator.openAppSettings();
+                            }
+                          : () {
+                              _locationController.getCurrentLocation();
+                            },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: _locationController.errorMessage.value.contains("permanently denied") 
+                            ? Colors.grey 
+                            : blueColor,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        elevation: 2,
+                      ),
+                      child: Text(
+                        _locationController.errorMessage.value.contains("permanently denied")
+                            ? 'Open Settings'
+                            : 'Retry',
+                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           );
         }
 

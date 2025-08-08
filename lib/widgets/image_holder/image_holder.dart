@@ -61,11 +61,44 @@ class _ImageHolderState extends State<ImageHolder> {
             ),
             child: CircleAvatar(
               radius: avatarRadius,
-              backgroundImage: image != null
-                  ? FileImage(image!)
-                  :  NetworkImage(
-                      widget.imageUrl,
-                    ) as ImageProvider,
+              backgroundColor: Colors.grey[300],
+              child: image != null
+                  ? ClipOval(
+                      child: Image.file(
+                        image!,
+                        width: avatarRadius * 2,
+                        height: avatarRadius * 2,
+                        fit: BoxFit.cover,
+                      ),
+                    )
+                  : ClipOval(
+                      child: Image.network(
+                        widget.imageUrl,
+                        width: avatarRadius * 2,
+                        height: avatarRadius * 2,
+                        fit: BoxFit.cover,
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return Center(
+                            child: CircularProgressIndicator(
+                              value: loadingProgress.expectedTotalBytes != null
+                                  ? loadingProgress.cumulativeBytesLoaded /
+                                      loadingProgress.expectedTotalBytes!
+                                  : null,
+                            ),
+                          );
+                        },
+                        errorBuilder: (context, error, stackTrace) {
+                          print('❌ Image loading error: $error');
+                          print('🔗 Failed URL: ${widget.imageUrl}');
+                          return Icon(
+                            Icons.person,
+                            size: avatarRadius,
+                            color: Colors.grey[600],
+                          );
+                        },
+                      ),
+                    ),
             ),
           ),
 

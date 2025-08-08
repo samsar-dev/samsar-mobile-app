@@ -5,12 +5,14 @@ class BuildInputWithOptions extends StatefulWidget {
   final String title;
   final TextEditingController controller;
   final List<String> options;
+  final bool hasError;
 
   const BuildInputWithOptions({
     Key? key,
     required this.title,
     required this.controller,
     required this.options,
+    this.hasError = false,
   }) : super(key: key);
 
   @override
@@ -77,11 +79,14 @@ class _BuildInputWithOptionsState extends State<BuildInputWithOptions> {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               decoration: BoxDecoration(
                 color: Colors.grey.shade50,
-                border: Border.all(color: Colors.grey.shade300),
+                border: Border.all(
+                  color: widget.hasError ? Colors.red : Colors.grey.shade300,
+                  width: widget.hasError ? 2.0 : 1.0,
+                ),
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.grey.shade200,
+                    color: widget.hasError ? Colors.red.withOpacity(0.1) : Colors.grey.shade200,
                     blurRadius: 6,
                     offset: const Offset(0, 2),
                   ),
@@ -106,6 +111,17 @@ class _BuildInputWithOptionsState extends State<BuildInputWithOptions> {
           ),
         ),
         const SizedBox(height: 16),
+        if (widget.hasError)
+          Padding(
+            padding: const EdgeInsets.only(left: 20, top: 4),
+            child: Text(
+              'This field is required',
+              style: TextStyle(
+                color: Colors.red,
+                fontSize: 12,
+              ),
+            ),
+          ),
       ],
     );
   }

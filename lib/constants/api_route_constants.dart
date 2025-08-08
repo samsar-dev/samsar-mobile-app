@@ -1,5 +1,7 @@
 //base url 
-const String _baseUrl = "https://samsar-backend-production.up.railway.app";
+// For local development
+// const String _baseUrl = "http://192.168.178.126:5000"; // Local development server
+const String _baseUrl = "https://samsar-backend-production.up.railway.app"; // Production server
 
 
 //post route for login body requires username and password
@@ -28,6 +30,9 @@ dynamic removeFavouriteListingRoute(String listingId) => "$_baseUrl/api/listings
 
 //put request to update the user profile it is multipart request because we need to upload the image it is protected route
 const updateProfileRoute = "$_baseUrl/api/users/profile";
+
+//get route to get current user profile (protected route)
+const getUserProfileRoute = "$_baseUrl/api/users/profile";
 
 //get route to get notificationd protected route
 const getNotificationsRoute = "$_baseUrl/api/notifications";

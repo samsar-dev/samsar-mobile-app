@@ -1,5 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:samsar/controllers/auth/auth_controller.dart';
 import 'package:samsar/constants/color_constants.dart';
 import 'package:samsar/widgets/app_button/app_button.dart';
 import 'package:samsar/widgets/image_holder/image_holder.dart';
@@ -33,40 +35,46 @@ class ProfileView extends StatefulWidget {
 }
 
 class _ProfileViewState extends State<ProfileView> {
+  final AuthController authController = Get.find<AuthController>();
 
   bool isEditing = false;
-
-
   File? profileImage;
 
-  String userName = '';
-  String email = '';
-  String phoneNo = '';
-  String bio = '';
-  String street = '';
-  String city = '';
-  String profilePicture = '';
-
-
-
-  late TextEditingController usernameController = TextEditingController(text: userName);
-  late TextEditingController emailController = TextEditingController(text: email);
-  late TextEditingController phoneController = TextEditingController(text: phoneNo);
-  late TextEditingController bioController = TextEditingController(text: bio);
-  late TextEditingController streetController = TextEditingController(text: street);
-  late TextEditingController cityController = TextEditingController(text: city);
+  late TextEditingController usernameController;
+  late TextEditingController emailController;
+  late TextEditingController phoneController;
+  late TextEditingController bioController;
+  late TextEditingController streetController;
+  late TextEditingController cityController;
 
   @override
   void initState() {
     super.initState();
+    _initializeControllers();
+  }
 
-    userName = widget.userName;
-    email = widget.email;
-    phoneNo = widget.mobileNo;
-    bio = widget.bio;
-    street = widget.street;
-    city = widget.city;
-    profilePicture = widget.imageUrl;
+  void _initializeControllers() {
+    // Initialize controllers with current user data from controller
+    final user = authController.user.value;
+    usernameController = TextEditingController(text: user?.username ?? widget.userName);
+    emailController = TextEditingController(text: user?.email ?? widget.email);
+    phoneController = TextEditingController(text: user?.phone ?? widget.mobileNo);
+    bioController = TextEditingController(text: user?.bio ?? widget.bio);
+    streetController = TextEditingController(text: user?.street ?? widget.street);
+    cityController = TextEditingController(text: user?.city ?? widget.city);
+  }
+
+  void _updateControllersFromUserData() {
+    // Update controllers when user data changes
+    final user = authController.user.value;
+    if (user != null) {
+      usernameController.text = user.username ?? '';
+      emailController.text = user.email ?? '';
+      phoneController.text = user.phone ?? '';
+      bioController.text = user.bio ?? '';
+      streetController.text = user.street ?? '';
+      cityController.text = user.city ?? '';
+    }
   }
 
   @override
@@ -75,7 +83,17 @@ class _ProfileViewState extends State<ProfileView> {
     final width = screenSize.width;
     final height = screenSize.height;
     
-    return Scaffold(
+    return Obx(() {
+      // Update controllers when user data changes
+      final user = authController.user.value;
+      if (user != null) {
+        // Only update if not currently editing to avoid cursor jumping
+        if (!isEditing) {
+          _updateControllersFromUserData();
+        }
+      }
+      
+      return Scaffold(
       backgroundColor: whiteColor,
 
       appBar: AppBar(
@@ -104,7 +122,7 @@ class _ProfileViewState extends State<ProfileView> {
                   tag: "image_bridge",
                   child: ImageHolder(
                     isEditable: true,
-                    imageUrl: profilePicture,
+                    imageUrl: authController.user.value?.profilePicture ?? widget.imageUrl,
                     onImageSelected: (File selectedImage) {
                       setState(() {
                         profileImage = selectedImage;
@@ -161,17 +179,25 @@ class _ProfileViewState extends State<ProfileView> {
                   text: isEditing ? "Save" : "Edit",
                   textColor: whiteColor,
                   textSize: 22,
-                  onPressed: () {
+                  onPressed: () async {
+                    if (isEditing) {
+                      // Save the changes
+                      final authController = Get.find<AuthController>();
+                      await authController.updateProfile(
+                        name: widget.name, // Name is not editable in this view
+                        username: usernameController.text,
+                        bio: bioController.text,
+                        street: streetController.text,
+                        city: cityController.text,
+                        phone: phoneController.text,
+                        profileImage: profileImage,
+                      );
+                      
+                      // Update controllers immediately after successful save
+                      _updateControllersFromUserData();
+                    }
                     setState(() {
                       isEditing = !isEditing;
-
-                      
-
-                      if (!isEditing) {
-                        
-                        
-                      
-                      }
                     });
                   },
                 )
@@ -181,7 +207,8 @@ class _ProfileViewState extends State<ProfileView> {
           ),
         ),
       ),
-    );
+      );
+    });
   }
 
   Widget buildProfileField(String label, TextEditingController controller) {

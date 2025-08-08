@@ -42,14 +42,8 @@ class ProfileAndSettings extends StatelessWidget {
     return Scaffold(
       backgroundColor: whiteColor,
       body: SafeArea(
-        child: FutureBuilder<User?>(
-          future: _loadUserData(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            }
-
-            final user = snapshot.data;
+        child: Obx(() {
+          final user = _authController.user.value;
 
             return SingleChildScrollView(
               child: Center(
@@ -126,8 +120,7 @@ class ProfileAndSettings extends StatelessWidget {
                 ),
               ),
             );
-          },
-        ),
+        }),
       ),
     );
   }

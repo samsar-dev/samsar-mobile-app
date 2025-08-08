@@ -11,6 +11,16 @@ class ApiError {
   });
 
   /// Create an ApiError from a JSON response
+  /// Create an ApiError from a simple message string
+  factory ApiError.fromMessage(String message) {
+    return ApiError(
+      errorResponse: ErrorResponse(
+        success: false,
+        error: Error(code: 'ERROR', message: message),
+      ),
+    );
+  }
+
   factory ApiError.fromJson(Map<String, dynamic> json) {
     if (json['code'] == 'FST_ERR_VALIDATION' || json['validation'] != null) {
       return ApiError(

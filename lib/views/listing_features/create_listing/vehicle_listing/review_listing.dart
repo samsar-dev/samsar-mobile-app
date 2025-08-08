@@ -65,6 +65,8 @@ class ReviewListing extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('ReviewListing: imageUrls = $imageUrls'); // Debug print
+    print('ReviewListing: _listingInputController.listingImage = ${_listingInputController.listingImage}'); // Debug print
 
     final double screenHeight = MediaQuery.of(context).size.height;
     final double screenWidth = MediaQuery.of(context).size.width;
@@ -503,12 +505,57 @@ class _ImagePlaceHolderState extends State<ImagePlaceHolder> {
   void _removeImage(int index) {
     setState(() {
       _images.removeAt(index);
-      _currentIndex = _currentIndex.clamp(0, _images.length - 1);
+      if (_images.isEmpty) {
+        _currentIndex = 0;
+      } else {
+        _currentIndex = _currentIndex.clamp(0, _images.length - 1);
+      }
     });
+  }
+
+  Widget _buildImageWidget(String imagePath) {
+    print('Building image for path: $imagePath'); // Debug print
+    
+    // Check if it's a URL or local file path
+    if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+      return Image.network(
+        imagePath,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) {
+          print('Network image error: $error');
+          return Container(
+            color: Colors.grey[300],
+            child: const Icon(Icons.error, color: Colors.red),
+          );
+        },
+      );
+    } else {
+      // Handle local file path
+      String cleanPath = imagePath;
+      // Remove file:// prefix if present
+      if (cleanPath.startsWith('file://')) {
+        cleanPath = cleanPath.substring(7);
+      }
+      
+      return Image.file(
+        File(cleanPath),
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) {
+          print('File image error: $error');
+          print('Attempted path: $cleanPath');
+          return Container(
+            color: Colors.grey[300],
+            child: const Icon(Icons.error, color: Colors.red),
+          );
+        },
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    print('ImagePlaceHolder: _images = $_images'); // Debug print
+    
     if (_images.isEmpty) {
       return Container(
         height: MediaQuery.of(context).size.width * 0.75,
@@ -536,15 +583,21 @@ class _ImagePlaceHolderState extends State<ImagePlaceHolder> {
                   });
                 },
                 itemBuilder: (context, index) {
+                  if (index >= _images.length) {
+                    return Container(
+                      width: width,
+                      height: height,
+                      color: Colors.grey[300],
+                      child: const Center(child: Text('Image not found')),
+                    );
+                  }
+                  
                   return Stack(
                     children: [
                       SizedBox(
                         width: width,
                         height: height,
-                        child: Image.network(
-                          _images[index],
-                          fit: BoxFit.cover,
-                        ),
+                        child: _buildImageWidget(_images[index]),
                       ),
                       // ❌ Remove Button
                       Positioned(
@@ -575,7 +628,7 @@ class _ImagePlaceHolderState extends State<ImagePlaceHolder> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: List.generate(_images.length, (index) {
-                    bool isActive = _currentIndex == index;
+                    bool isActive = _currentIndex == index && index < _images.length;
                     return AnimatedContainer(
                       duration: const Duration(milliseconds: 200),
                       margin: EdgeInsets.symmetric(horizontal: width * 0.01),

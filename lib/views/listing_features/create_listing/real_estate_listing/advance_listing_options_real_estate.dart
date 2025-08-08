@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:samsar/constants/color_constants.dart';
+import 'package:samsar/controllers/listing/listing_input_controller.dart';
 import 'package:samsar/views/listing_features/create_listing/vehicle_listing/review_listing.dart';
 import 'package:samsar/widgets/animated_input_wrapper/animated_input_wrapper.dart';
 import 'package:samsar/widgets/app_button/app_button.dart';
@@ -17,6 +18,8 @@ class AdvanceListingOptionsRealEstate extends StatefulWidget {
 
 class _AdvanceListingOptionsRealEstateState extends State<AdvanceListingOptionsRealEstate> {
   int currentStep = 0;
+
+  final ListingInputController _listingInputController = Get.find<ListingInputController>();
 
   // Climate & Energy
   final TextEditingController heatingController = TextEditingController();
@@ -129,11 +132,7 @@ class _AdvanceListingOptionsRealEstateState extends State<AdvanceListingOptionsR
             } else {
               Get.to(ReviewListing(
                 isVehicle: false,
-                imageUrls: [
-                  "https://www.financialexpress.com/wp-content/uploads/2023/09/Mercedes-AMG-G63-Grand-Edition.jpg",
-                  "https://stimg.cardekho.com/images/carexteriorimages/630x420/Mercedes-Benz/E-Class/9790/1728652931654/front-left-side-47.jpg",
-                  "https://stimg.cardekho.com/images/carexteriorimages/930x620/Mercedes-Benz/S-Class/10853/1690451611932/front-left-side-47.jpg"
-                ],
+                imageUrls: _listingInputController.listingImage.toList(),
               ));
             }
           },

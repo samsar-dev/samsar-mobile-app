@@ -164,11 +164,7 @@ class _FeaturesAndExtrasState extends State<FeaturesAndExtras> {
               
               Get.to(ReviewListing(
                 isVehicle: true,
-                imageUrls: [
-                  "https://www.financialexpress.com/wp-content/uploads/2023/09/Mercedes-AMG-G63-Grand-Edition.jpg",
-                  "https://stimg.cardekho.com/images/carexteriorimages/630x420/Mercedes-Benz/E-Class/9790/1728652931654/front-left-side-47.jpg",
-                  "https://stimg.cardekho.com/images/carexteriorimages/930x620/Mercedes-Benz/S-Class/10853/1690451611932/front-left-side-47.jpg"
-                ],
+                imageUrls: _listingInputController.listingImage.toList(),
               ));
             }
           },
