@@ -51,8 +51,11 @@ class SettingsService {
     required Map<String, dynamic> requestBody,
   }) async {
     try {
-      final response = await _dio.patch(
-        getSettingsRoute, // use PATCH or POST depending on your backend
+      print("🌐 Making POST request to: $getSettingsRoute");
+      print("🔑 Using access token: ${accessToken.substring(0, 20)}...");
+      print("📦 Request body: $requestBody");
+      final response = await _dio.post(
+        getSettingsRoute, // Backend expects POST for settings update
         data: requestBody,
         options: Options(
           headers: {
@@ -62,9 +65,14 @@ class SettingsService {
         ),
       );
 
+      print("📊 Response status: ${response.statusCode}");
+      print("📝 Response data: ${response.data}");
+      
       if (response.statusCode == 200) {
+        print("✅ Settings update successful!");
         return ApiResponse.success(response.data as Map<String, dynamic>);
       } else {
+        print("❌ Settings update failed with status: ${response.statusCode}");
         return ApiResponse.failure(ApiError.fromJson(response.data));
       }
     } on DioException catch (dioError) {
@@ -79,6 +87,7 @@ class SettingsService {
         ),
       );
     } catch (e) {
+      print("❌ General exception caught: $e");
       return ApiResponse.failure(
         ApiError(
           fastifyErrorResponse: null,

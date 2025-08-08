@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:samsar/controllers/auth/auth_controller.dart';
 import 'package:samsar/models/settings/get_settings_model.dart';
 import 'package:samsar/services/settings/settings_service.dart';
+import 'package:samsar/widgets/custom_snackbar/custom_snackbar.dart';
 
 class SettingsController extends GetxController {
 
@@ -51,10 +52,12 @@ class SettingsController extends GetxController {
 
   Future<void> updateSettingsController() async {
     try {
+      print("🔄 Starting settings update...");
       isLoading.value = true;
 
       final accessToken = await _authController.getAccessToken();
       if (accessToken == null) throw Exception("Access token is null");
+      print("✅ Access token obtained");
 
       final requestBody = {
         "notifications": {
@@ -72,24 +75,32 @@ class SettingsController extends GetxController {
         }
       };
 
+      print("📦 Sending request body: $requestBody");
+      
       final result = await SettingsService().updateUserSettingsService(
         accessToken: accessToken,
         requestBody: requestBody,
       );
 
+      print("📊 API call completed. Success: ${result.isSuccess}");
+      if (result.successResponse != null) {
+        print("✅ Success response: ${result.successResponse}");
+      }
+      if (result.apiError != null) {
+        print("❌ API Error: ${result.apiError?.message}");
+      }
+
       if (result.isSuccess) {
-        Get.snackbar("Success", "Settings updated successfully");
+        showCustomSnackbar("Settings updated successfully", false);
       } else {
-        print("Update failed: ${result.apiError!.errorResponse!.error!.message}");
-        Get.snackbar("Error", "Failed to update settings");
+        isLoading.value = false;
+        showCustomSnackbar("Failed to update settings: ${result.apiError?.message ?? 'Unknown error'}", true);
       }
     } catch (e) {
-      print("Error updating settings: $e");
-      Get.snackbar("Error", "Something went wrong");
+      isLoading.value = false;
+      showCustomSnackbar("Failed to update settings: ${e.toString()}", true);
     } finally {
       isLoading.value = false;
     }
   }
-
-
 }
