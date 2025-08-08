@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:samsar/constants/color_constants.dart';
 import 'package:samsar/controllers/auth/auth_controller.dart';
-import 'package:samsar/widgets/animated_input_wrapper/animated_input_wrapper.dart';
-import 'package:samsar/widgets/user_listing_card.dart/user_listing_card.dart';
+import 'package:samsar/views/listing_features/create_listing/create_listing_view.dart';
+
+// TODO: Uncomment these imports when User model is updated with listings
+// import 'package:samsar/widgets/animated_input_wrapper/animated_input_wrapper.dart';
+// import 'package:samsar/widgets/user_listing_card.dart/user_listing_card.dart';
 
 class MyListings extends StatelessWidget {
   MyListings({super.key});
@@ -27,34 +30,90 @@ class MyListings extends StatelessWidget {
         ),),
       ),
 
-      body: Center(
-        child: Obx(
-          () {
+      body: Obx(() {
+        if (_authController.isLoading.value) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
 
-            if(_authController.isLoading.value) {
-              return Center(
-                child: CircularProgressIndicator(),
-              );
-            }
+        if (_authController.user.value == null) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text("Please log in to view your listings"),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () {
+                    // Navigate to login screen
+                    Get.offAllNamed('/login');
+                  },
+                  child: const Text('Go to Login'),
+                ),
+              ],
+            ),
+          );
+        }
 
-            if(_authController.user.value == null) {
-              return Center(
-                child: Text("You hasn't listed anything yet"),
-              );
-            }
+        // TODO: Replace with actual user listings once the User model is updated
+        // For now, we'll show a message that the user hasn't listed anything
+        // When the User model is updated with a listings property, we can use:
+        // final userListings = _authController.user.value?.listings ?? [];
+        
+        // For now, show an empty list message
+        return Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                "You haven't listed anything yet.",
+                style: TextStyle(fontSize: 16),
+              ),
+              const SizedBox(height: 8),
+              ElevatedButton(
+                onPressed: () {
+                  // Navigate to create listing screen
+                  Get.to(() => const CreateListingView());
+                },
+                child: const Text("Create Your First Listing"),
+              ),
+            ],
+          ),
+        );
+        
+        /* 
+        // This is how it will work once the User model has a listings property:
+        if (userListings.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text("You haven't listed anything yet."),
+                const SizedBox(height: 8),
+                ElevatedButton(
+                  onPressed: () {
+                    // Navigate to create listing screen
+                  },
+                  child: const Text("Create Your First Listing"),
+                ),
+              ],
+            ),
+          );
+        }
 
-            return ListView.builder(
-              itemCount: 3,
-              itemBuilder: (context, index) {
-                return AnimatedInputWrapper(
-                  delayMilliseconds: 100 * index,
-                  child: UserListingCard()
-                );
-              },
+        return ListView.builder(
+          itemCount: userListings.length,
+          itemBuilder: (context, index) {
+            final listing = userListings[index];
+            return AnimatedInputWrapper(
+              delayMilliseconds: 100 * index,
+              child: UserListingCard(listing: listing)
             );
-          }
-        ),
-      ),
+          },
+        );
+        */
+      }),
     );
   }
 }
