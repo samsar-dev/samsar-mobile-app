@@ -6,13 +6,11 @@ import 'package:get/get.dart';
 import 'package:samsar/constants/color_constants.dart';
 import 'package:samsar/models/auth/login_model.dart';
 import 'package:samsar/views/listing_features/my_listings/my_listings.dart';
-import 'package:samsar/views/listing_feed/listing_feed_view.dart';
 import 'package:samsar/views/profile_and_settings/profile_view.dart';
 import 'package:samsar/views/settings/settings.dart';
 import 'package:samsar/widgets/app_button/app_button.dart';
 import 'package:samsar/widgets/image_holder/image_holder.dart';
 import 'package:samsar/controllers/auth/auth_controller.dart';
-import 'package:samsar/widgets/listing_card/listing_card.dart';
 
 class ProfileAndSettings extends StatelessWidget {
   ProfileAndSettings({super.key});
