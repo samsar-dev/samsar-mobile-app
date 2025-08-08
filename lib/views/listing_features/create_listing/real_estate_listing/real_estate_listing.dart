@@ -14,7 +14,8 @@ class RealEstateListing extends StatefulWidget {
 }
 
 class _RealEstateListingState extends State<RealEstateListing> {
-
+  final _formKey = GlobalKey<FormState>();
+  bool _showValidation = false;
 
   final List<SelectTypeItem> propertyTypes = [
     SelectTypeItem(title: 'House', icon: Icons.house),
@@ -25,7 +26,7 @@ class _RealEstateListingState extends State<RealEstateListing> {
     SelectTypeItem(title: 'Other', icon: Icons.house),
   ];
 
-  int selectedIndex = 0;
+  int selectedIndex = -1; // No default selection
 
   final TextEditingController titleController = TextEditingController();
   final TextEditingController totalAreaController = TextEditingController();
@@ -36,6 +37,67 @@ class _RealEstateListingState extends State<RealEstateListing> {
   final TextEditingController locationController = TextEditingController();
   final TextEditingController description = TextEditingController();
 
+  @override
+  void initState() {
+    super.initState();
+    
+    // Add listeners to trigger rebuild when user types (validation will check field content)
+    titleController.addListener(() {
+      if (_showValidation) {
+        setState(() {}); // Just trigger rebuild, don't reset validation
+      }
+    });
+    
+    totalAreaController.addListener(() {
+      if (_showValidation) {
+        setState(() {}); // Just trigger rebuild, don't reset validation
+      }
+    });
+    
+    yearBuiltController.addListener(() {
+      if (_showValidation) {
+        setState(() {}); // Just trigger rebuild, don't reset validation
+      }
+    });
+    
+    bedroomsController.addListener(() {
+      if (_showValidation) {
+        setState(() {}); // Just trigger rebuild, don't reset validation
+      }
+    });
+    
+    bathroomsController.addListener(() {
+      if (_showValidation) {
+        setState(() {}); // Just trigger rebuild, don't reset validation
+      }
+    });
+    
+    priceController.addListener(() {
+      if (_showValidation) {
+        setState(() {}); // Just trigger rebuild, don't reset validation
+      }
+    });
+    
+    description.addListener(() {
+      if (_showValidation) {
+        setState(() {}); // Just trigger rebuild, don't reset validation
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    titleController.dispose();
+    totalAreaController.dispose();
+    yearBuiltController.dispose();
+    bedroomsController.dispose();
+    bathroomsController.dispose();
+    priceController.dispose();
+    locationController.dispose();
+    description.dispose();
+    super.dispose();
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -44,39 +106,43 @@ class _RealEstateListingState extends State<RealEstateListing> {
     final double screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-
       backgroundColor: whiteColor,
-
       body: SingleChildScrollView(
         child: SafeArea(
-          child: Center(
-            child: Column(
-              children: [
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 8.0, left: 8.0),
-                    child: Text("Property Type", style: TextStyle(
-                      color: blueColor,
-                      fontWeight: FontWeight.bold,
-                      fontSize: screenWidth * 0.05
-                    ),),
+          child: Form(
+            key: _formKey,
+            child: Center(
+              child: Column(
+                children: [
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 8.0, left: 8.0),
+                      child: Text("Property Type", style: TextStyle(
+                        color: blueColor,
+                        fontWeight: FontWeight.bold,
+                        fontSize: screenWidth * 0.05
+                      ),),
+                    ),
                   ),
-                ),
-        
-                 SizedBox(
-                  width: double.infinity,
-                  height: screenHeight * 0.25,
-                  child: SelectType(
-                    items: propertyTypes,
-                    selectedIndex: selectedIndex,
-                    onItemSelected: (index) {
-                      setState(() {
-                        selectedIndex = index;
-                      });
-                    },
+          
+                   SizedBox(
+                    width: double.infinity,
+                    height: screenHeight * 0.25,
+                    child: SelectType(
+                      items: propertyTypes,
+                      selectedIndex: selectedIndex,
+                      onItemSelected: (index) {
+                        print('DEBUG: Property type selected - index: $index, type: ${propertyTypes[index].title}');
+                        setState(() {
+                          selectedIndex = index;
+                          _showValidation = false; // Reset validation when user makes selection
+                          print('DEBUG: After setState - selectedIndex: $selectedIndex, _showValidation: $_showValidation');
+                        });
+                      },
+                      hasError: _showValidation && selectedIndex == -1,
+                    ),
                   ),
-                ),
         
                 Align(
                   alignment: Alignment.centerLeft,
@@ -96,6 +162,13 @@ class _RealEstateListingState extends State<RealEstateListing> {
                   title: "Title", 
                   label: "Title", 
                   textController: titleController,
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Title is required';
+                    }
+                    return null;
+                  },
+                  hasError: _showValidation && titleController.text.trim().isEmpty,
                 ),
         
                 SizedBox(height: screenHeight * 0.01,),
@@ -117,37 +190,79 @@ class _RealEstateListingState extends State<RealEstateListing> {
                 BuildInput(
                   title: "Total area", 
                   label: "Enter total area in square meters", 
-                  textController: totalAreaController
+                  textController: totalAreaController,
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Total area is required';
+                    }
+                    return null;
+                  },
+                  hasError: _showValidation && totalAreaController.text.trim().isEmpty,
                 ),
 
                 BuildInput(
                   title: "Year Build", 
                   label: "Enter year of construction",
-                  textController: yearBuiltController
+                  textController: yearBuiltController,
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Year built is required';
+                    }
+                    return null;
+                  },
+                  hasError: _showValidation && yearBuiltController.text.trim().isEmpty,
                 ),
 
                 BuildInput(
                   title: "Bedrooms", 
                   label: "Number of bedrooms", 
-                  textController: bedroomsController
+                  textController: bedroomsController,
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Number of bedrooms is required';
+                    }
+                    return null;
+                  },
+                  hasError: _showValidation && bedroomsController.text.trim().isEmpty,
                 ),
 
                 BuildInput(
                   title: "Bathrooms", 
                   label: "Number of bathrooms", 
-                  textController: bathroomsController
+                  textController: bathroomsController,
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Number of bathrooms is required';
+                    }
+                    return null;
+                  },
+                  hasError: _showValidation && bathroomsController.text.trim().isEmpty,
                 ),
 
                 BuildInput(
                  title:  "Price", 
-                 label: "Price", 
-                  textController: priceController
+                 label: "Enter price", 
+                  textController: priceController,
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Price is required';
+                    }
+                    return null;
+                  },
+                  hasError: _showValidation && priceController.text.trim().isEmpty,
                 ),
 
                 BuildInput(
                   title: "Description", 
-                  label: "Description", 
+                  label: "Enter description", 
                   textController: description,
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Description is required';
+                    }
+                    return null;
+                  },
+                  hasError: _showValidation && description.text.trim().isEmpty,
                 ),
 
                 SizedBox(height: screenHeight * 0.02,),
@@ -159,13 +274,34 @@ class _RealEstateListingState extends State<RealEstateListing> {
                   text: "Add pictures",
                   textColor: whiteColor,
                   onPressed: () {
-                    Get.to(AddPictures(isVehicles: false,));
+                    setState(() {
+                      _showValidation = true;
+                    });
+                    
+                    bool isValid = _formKey.currentState?.validate() ?? false;
+                    bool typeSelected = selectedIndex != -1;
+                    print('DEBUG: Validation check - selectedIndex: $selectedIndex, typeSelected: $typeSelected, _showValidation: $_showValidation');
+                    
+                    if (!typeSelected) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Please select a property type'),
+                          backgroundColor: Colors.red,
+                          duration: Duration(seconds: 2),
+                        ),
+                      );
+                    }
+                    
+                    if (isValid && typeSelected) {
+                      Get.to(AddPictures(isVehicles: false,));
+                    }
                   },
                 ),
 
                 SizedBox(height: screenHeight * 0.02,),
-              ],
-            )
+                ],
+              ),
+            ),
           ),
         ),
       ),

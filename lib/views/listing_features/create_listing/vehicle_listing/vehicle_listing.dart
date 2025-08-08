@@ -25,7 +25,74 @@ class _VehicleListingState extends State<VehicleListing> {
   // final LocationController _locationController = Get.find<LocationController>();
   final LocationController _locationController = Get.put(LocationController());
   final _formKey = GlobalKey<FormState>();
+  bool _showValidation = false;
 
+  @override
+  void initState() {
+    super.initState();
+    
+    locationController = TextEditingController(text: _locationController.address.value);
+    
+    // Add listeners to trigger rebuild when user types (validation will check field content)
+    titleController.addListener(() {
+      if (_showValidation) {
+        setState(() {}); // Just trigger rebuild, don't reset validation
+      }
+    });
+    
+    priceController.addListener(() {
+      if (_showValidation) {
+        setState(() {}); // Just trigger rebuild, don't reset validation
+      }
+    });
+    
+    locationController.addListener(() {
+      if (_showValidation) {
+        setState(() {}); // Just trigger rebuild, don't reset validation
+      }
+    });
+    
+    descriptionController.addListener(() {
+      if (_showValidation) {
+        setState(() {}); // Just trigger rebuild, don't reset validation
+      }
+    });
+    
+    makeController.addListener(() {
+      final make = makeController.text.trim();
+      setState(() {
+        modelOptions = makeToModels[make] ?? ["Custom"];
+      });
+      
+      if (_showValidation) {
+        setState(() {}); // Just trigger rebuild, don't reset validation
+      }
+    });
+    
+    modelController.addListener(() {
+      if (_showValidation) {
+        setState(() {}); // Just trigger rebuild, don't reset validation
+      }
+    });
+    
+    yearController.addListener(() {
+      if (_showValidation) {
+        setState(() {}); // Just trigger rebuild, don't reset validation
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    titleController.dispose();
+    priceController.dispose();
+    locationController.dispose();
+    descriptionController.dispose();
+    makeController.dispose();
+    modelController.dispose();
+    yearController.dispose();
+    super.dispose();
+  }
 
    final List<SelectTypeItem> vehicleTypes = [
     SelectTypeItem(title: 'Car', icon: Icons.directions_car),
@@ -152,25 +219,7 @@ class _VehicleListingState extends State<VehicleListing> {
   final TextEditingController descriptionController = TextEditingController();
   String selectedVehicleType = "";
 
-  int selectedIndex = 0;
-
-  @override
-  void initState() {
-    super.initState();
-
-    locationController = TextEditingController(text: _locationController.address.value);
-
-    makeController.addListener(() {
-      final make = makeController.text.trim();
-      setState(() {
-        modelOptions = makeToModels[make] ?? ["Custom"];
-      });
-    });
-  }
-
-  void onSubmit() {
-
-  }
+  int selectedIndex = -1; // No default selection
 
   @override
   Widget build(BuildContext context) {
@@ -207,12 +256,14 @@ class _VehicleListingState extends State<VehicleListing> {
                     items: vehicleTypes,
                     selectedIndex: selectedIndex,
                     onItemSelected: (index) {
+                      print('DEBUG: Vehicle type selected - index: $index, type: ${vehicleTypes[index].title}');
                       setState(() {
                         selectedIndex = index;
+                        selectedVehicleType = vehicleTypes[index].title;
+                        print('DEBUG: After setState - selectedIndex: $selectedIndex, selectedVehicleType: $selectedVehicleType');
                       });
-          
-                      selectedVehicleType = vehicleTypes[index].title;
                     },
+                    hasError: _showValidation && selectedIndex < 0,
                   ),
                 ),
           
@@ -238,29 +289,47 @@ class _VehicleListingState extends State<VehicleListing> {
                     if(value!.isEmpty) {
                       return "Title is required";
                     }
-
                     return null;
                   },
+                  hasError: _showValidation && titleController.text.trim().isEmpty,
                 ),
-                BuildInputWithOptions(
+                BuildInput(
                   title: "Make", 
-                  // label: "Select Make", 
-                  controller: makeController, 
-                  options: options
+                  label: "Make", 
+                  textController: makeController,
+                  validator: (value) {
+                    if(value!.isEmpty) {
+                      return "Make is required";
+                    }
+                    return null;
+                  },
+                  hasError: _showValidation && makeController.text.trim().isEmpty,
                 ),
           
-                BuildInputWithOptions(
+                BuildInput(
                   title: "Model", 
-                  // label: "Select Model", 
-                  controller: modelController, 
-                  options: modelOptions
+                  label: "Model", 
+                  textController: modelController,
+                  validator: (value) {
+                    if(value!.isEmpty) {
+                      return "Model is required";
+                    }
+                    return null;
+                  },
+                  hasError: _showValidation && modelController.text.trim().isEmpty,
                 ),
           
-                BuildInputWithOptions(
+                BuildInput(
                   title: "Year", 
-                  // label: "Select Year", 
-                  controller: yearController, 
-                  options: years
+                  label: "Year", 
+                  textController: yearController,
+                  validator: (value) {
+                    if(value!.isEmpty) {
+                      return "Year is required";
+                    }
+                    return null;
+                  },
+                  hasError: _showValidation && yearController.text.trim().isEmpty,
                 ),
           
                 BuildInput(
@@ -271,25 +340,34 @@ class _VehicleListingState extends State<VehicleListing> {
                     if(value!.isEmpty) {
                       return "Price is required";
                     }
-
                     return null;
                   },
+                  hasError: _showValidation && priceController.text.trim().isEmpty,
                 ),
           
                 BuildInput(
                   title: "Location", 
-                  label: "Enter your location", 
+                  label: "Location", 
                   textController: locationController,
                   validator: (value) {
                     if(value!.isEmpty) {
                       return "Location is required";
                     }
+                    return null;
                   },
+                  hasError: _showValidation && locationController.text.trim().isEmpty,
                 ),
                 BuildMultilineInput(
                   title: "Description", 
                   label: "Description", 
-                  controller: descriptionController
+                  controller: descriptionController,
+                  validator: (value) {
+                    if(value == null || value.trim().isEmpty) {
+                      return "Description is required";
+                    }
+                    return null;
+                  },
+                  hasError: _showValidation && descriptionController.text.trim().isEmpty,
                 ),
           
                 SizedBox(height: screenHeight * 0.01,),
@@ -301,22 +379,44 @@ class _VehicleListingState extends State<VehicleListing> {
                   text: "Add pictures",
                   textColor: whiteColor,
                   onPressed: () {
-          
-                    _listingInputController.setBasicDetails(
-                      title: titleController.text,
-                      description: descriptionController.text,
-                      price: int.parse(priceController.text),
-                      mainCategory: "vehicles",
-                      subCategory: selectedVehicleType,
-                      location: locationController.text,
-                      latitude: _locationController.latitude.value,//latitude
-                      longitude: _locationController.longitude.value,//longitude
-                      make: makeController.text,
-                      model: modelController.text,
-                      year: int.parse(yearController.text)
-                    );
-          
-                    Get.to(AddPictures());
+                    setState(() {
+                      _showValidation = true;
+                    });
+                    
+                    bool isValid = _formKey.currentState?.validate() ?? false;
+                    bool typeSelected = selectedIndex >= 0;
+                    print('DEBUG: Vehicle validation check - selectedIndex: $selectedIndex, typeSelected: $typeSelected, _showValidation: $_showValidation');
+                    bool makeSelected = makeController.text.isNotEmpty;
+                    bool modelSelected = modelController.text.isNotEmpty;
+                    bool yearSelected = yearController.text.isNotEmpty;
+                    
+                    if (!typeSelected) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Please select a vehicle type'),
+                          backgroundColor: Colors.red,
+                          duration: Duration(seconds: 2),
+                        ),
+                      );
+                    }
+                    
+                    if (isValid && typeSelected && makeSelected && modelSelected && yearSelected) {
+                      _listingInputController.setBasicDetails(
+                        title: titleController.text,
+                        description: descriptionController.text,
+                        price: int.parse(priceController.text),
+                        mainCategory: "vehicles",
+                        subCategory: selectedVehicleType,
+                        location: locationController.text,
+                        latitude: _locationController.latitude.value,//latitude
+                        longitude: _locationController.longitude.value,//longitude
+                        make: makeController.text,
+                        model: modelController.text,
+                        year: int.parse(yearController.text)
+                      );
+            
+                      Get.to(AddPictures());
+                    }
                   },
                 ),
           
