@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:samsar/constants/color_constants.dart';
 import 'package:samsar/controllers/features/settings_controller.dart';
 import 'package:samsar/controllers/features/theme_controller.dart';
+import 'package:samsar/controllers/features/language_controller.dart';
 import 'package:samsar/widgets/app_button/app_button.dart';
 
 class Settings extends StatefulWidget {
@@ -13,11 +14,8 @@ class Settings extends StatefulWidget {
 }
 
 class _SettingsState extends State<Settings> {
-  bool isDarkMode = false;
-  String selectedLanguage = 'English';
   String selectedTimezone = 'UTC +5:30 (IST)';
 
-  final List<String> languages = ['English', 'Arabic'];
   final List<String> timezones = [
     'UTC -8:00 (PST)',
     'UTC -5:00 (EST)',
@@ -29,10 +27,12 @@ class _SettingsState extends State<Settings> {
   final List<String> visibilityOptions = ['Public', 'Private'];
   final SettingsController _settingsController = Get.put(SettingsController());
   final ThemeController _themeController = Get.find<ThemeController>();
+  final LanguageController _languageController = Get.find<LanguageController>();
 
   @override
   void initState() {
     super.initState();
+    // Fetch settings on first load only
     _settingsController.getSettingsController();
   }
 
@@ -47,7 +47,7 @@ class _SettingsState extends State<Settings> {
         backgroundColor: whiteColor,
         elevation: 0,
         title: Text(
-          "Settings",
+          "settings".tr,
           style: TextStyle(color: blackColor, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
@@ -64,29 +64,25 @@ class _SettingsState extends State<Settings> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  buildLabel(screenWidth, screenHeight, "Preferences"),
+                  buildLabel(screenWidth, screenHeight, "preferences".tr),
                   SizedBox(height: screenHeight * 0.02),
 
                   settingCard(
                     screenWidth,
                     screenHeight,
-                    title: "Language",
-                    child: customDropdown(
-                      selectedValue: selectedLanguage,
-                      items: languages,
-                      onChanged: (val) => setState(() => selectedLanguage = val),
-                    ),
+                    title: "language".tr,
+                    child: modernLanguageSwitcher(),
                   ),
 
                   settingCard(
                     screenWidth,
                     screenHeight,
-                    title: "Dark Theme",
+                    title: "dark_theme".tr,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          _themeController.isDarkMode.value ? "Enabled" : "Disabled",
+                          _themeController.isDarkMode.value ? "enabled".tr : "disabled".tr,
                           style: TextStyle(
                             fontSize: 16,
                              color: _themeController.isDarkMode.value ? Colors.white : Colors.grey[800],
@@ -104,7 +100,7 @@ class _SettingsState extends State<Settings> {
                   settingCard(
                     screenWidth,
                     screenHeight,
-                    title: "Timezone",
+                    title: "timezone".tr,
                     child: customDropdown(
                       selectedValue: selectedTimezone,
                       items: timezones,
@@ -113,16 +109,16 @@ class _SettingsState extends State<Settings> {
                   ),
 
                   SizedBox(height: screenHeight * 0.03),
-                  buildLabel(screenWidth, screenHeight, "Notifications"),
+                  buildLabel(screenWidth, screenHeight, "notifications".tr),
                   SizedBox(height: screenHeight * 0.01),
 
                   Obx(() => settingCard(
                         screenWidth,
                         screenHeight,
-                        title: "Inbox Messages",
+                        title: "inbox_messages".tr,
                         child: customCheckbox(
-                          title: "Inbox Messages",
-                          subtitle: "Get notified about new messages",
+                          title: "inbox_messages".tr,
+                          subtitle: "inbox_messages_desc".tr,
                           value: _settingsController.messageNotifications.value,
                           onChanged: (val) => _settingsController.messageNotifications.value = val,
                         ),
@@ -131,10 +127,10 @@ class _SettingsState extends State<Settings> {
                   Obx(() => settingCard(
                         screenWidth,
                         screenHeight,
-                        title: "Listing Updates",
+                        title: "listing_updates".tr,
                         child: customCheckbox(
-                          title: "Listing Status",
-                          subtitle: "Approvals, rejections, etc.",
+                          title: "listing_status".tr,
+                          subtitle: "listing_status_desc".tr,
                           value: _settingsController.listingNotifications.value,
                           onChanged: (val) => _settingsController.listingNotifications.value = val,
                         ),
@@ -143,10 +139,10 @@ class _SettingsState extends State<Settings> {
                   Obx(() => settingCard(
                         screenWidth,
                         screenHeight,
-                        title: "Login Notifications",
+                        title: "login_notifications".tr,
                         child: customCheckbox(
-                          title: "New Login Alerts",
-                          subtitle: "Be notified of new logins",
+                          title: "new_login_alerts".tr,
+                          subtitle: "new_login_alerts_desc".tr,
                           value: _settingsController.loginNotifications.value,
                           onChanged: (val) => _settingsController.loginNotifications.value = val,
                         ),
@@ -155,38 +151,39 @@ class _SettingsState extends State<Settings> {
                   Obx(() => settingCard(
                         screenWidth,
                         screenHeight,
-                        title: "Newsletter",
+                        title: "newsletter".tr,
                         child: customCheckbox(
-                          title: "Samsar Weekly",
-                          subtitle: "Subscribe to tips, updates, and promotions",
+                          title: "samsar_weekly".tr,
+                          subtitle: "samsar_weekly_desc".tr,
                           value: _settingsController.newsletterSubscribed.value,
                           onChanged: (val) => _settingsController.newsletterSubscribed.value = val,
                         ),
                       )),
 
                   SizedBox(height: screenHeight * 0.03),
-                  buildLabel(screenWidth, screenHeight, "Privacy"),
+                  buildLabel(screenWidth, screenHeight, "privacy".tr),
                   SizedBox(height: screenHeight * 0.01),
 
                   Obx(() => settingCard(
                         screenWidth,
                         screenHeight,
-                        title: "Profile Visibility",
+                        title: "profile_visibility".tr,
                         child: customDropdown(
-                          selectedValue: _settingsController.privateProfile.value ? "Private" : "Public",
-                          items: visibilityOptions,
-                          onChanged: (val) =>
-                              _settingsController.privateProfile.value = val == "Private",
+                          selectedValue: _settingsController.privateProfile.value ? "private".tr : "public".tr,
+                          items: ["public".tr, "private".tr],
+                          onChanged: (val) => {
+                              _settingsController.privateProfile.value = val == "private".tr,
+                          },
                         ),
                       )),
 
                   Obx(() => settingCard(
                         screenWidth,
                         screenHeight,
-                        title: "Show Online Status",
+                        title: "show_online_status".tr,
                         child: customCheckbox(
-                          title: "Show Online",
-                          subtitle: "Allow others to see your online status",
+                          title: "show_online".tr,
+                          subtitle: "show_online_desc".tr,
                           value: _settingsController.showOnlineStatus.value,
                           onChanged: (val) => _settingsController.showOnlineStatus.value = val,
                         ),
@@ -195,10 +192,10 @@ class _SettingsState extends State<Settings> {
                   Obx(() => settingCard(
                         screenWidth,
                         screenHeight,
-                        title: "Show Phone Number",
+                        title: "show_phone".tr,
                         child: customCheckbox(
-                          title: "Phone Visibility",
-                          subtitle: "Display your phone number to others",
+                          title: "phone_visibility".tr,
+                          subtitle: "phone_visibility_desc".tr,
                           value: _settingsController.showPhoneNumber.value,
                           onChanged: (val) => _settingsController.showPhoneNumber.value = val,
                         ),
@@ -207,10 +204,10 @@ class _SettingsState extends State<Settings> {
                   Obx(() => settingCard(
                         screenWidth,
                         screenHeight,
-                        title: "Show Email",
+                        title: "show_email".tr,
                         child: customCheckbox(
-                          title: "Email Visibility",
-                          subtitle: "Display your email address to others",
+                          title: "email_visibility".tr,
+                          subtitle: "email_visibility_desc".tr,
                           value: _settingsController.showEmail.value,
                           onChanged: (val) => _settingsController.showEmail.value = val,
                         ),
@@ -219,10 +216,10 @@ class _SettingsState extends State<Settings> {
                   Obx(() => settingCard(
                         screenWidth,
                         screenHeight,
-                        title: "Allow Direct Messaging",
+                        title: "allow_direct_messaging".tr,
                         child: customCheckbox(
-                          title: "Enable DMs",
-                          subtitle: "Allow others to send you direct messages",
+                          title: "enable_dms_title".tr,
+                          subtitle: "enable_dms_desc".tr,
                           value: _settingsController.allowMessaging.value,
                           onChanged: (val) => _settingsController.allowMessaging.value = val,
                         ),
@@ -234,7 +231,7 @@ class _SettingsState extends State<Settings> {
                     child: AppButton(
                       widthSize: 0.65,
                       heightSize: 0.06,
-                      text: "Save Settings",
+                      text: "save_settings".tr,
                       buttonColor: blueColor,
                       textColor: whiteColor,
                       onPressed: () => _settingsController.updateSettingsController(),
@@ -351,5 +348,105 @@ class _SettingsState extends State<Settings> {
       value: value,
       onChanged: (val) => onChanged(val!),
     );
+  }
+
+  Widget modernLanguageSwitcher() {
+    return Obx(() {
+      return Container(
+        decoration: BoxDecoration(
+          color: Colors.grey.shade50,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.grey.shade300),
+        ),
+        child: Row(
+          children: _languageController.supportedLanguages.entries.map((entry) {
+            final languageName = entry.key;
+            final isSelected = _languageController.currentLanguage == languageName;
+            final flag = _languageController.getLanguageFlag(languageName);
+            
+            return Expanded(
+              child: GestureDetector(
+                onTap: () async {
+                  print('👆 Language switcher tapped: $languageName');
+                  print('📱 Current selected: ${_languageController.currentLanguage}');
+                  print('❓ Is selected: $isSelected');
+                  
+                  if (!isSelected) {
+                    print('🔄 Starting language change process...');
+                    
+                    // Immediate visual feedback
+                    await _languageController.changeLanguage(languageName);
+                    
+                    print('✅ Language change completed');
+                    print('📱 New current language: ${_languageController.currentLanguage}');
+                    print('🌍 New current locale: ${_languageController.currentLocale}');
+                    
+                    // Show success message
+                    Get.snackbar(
+                      'language_changed'.tr,
+                      '',
+                      duration: const Duration(seconds: 1),
+                      snackPosition: SnackPosition.BOTTOM,
+                      backgroundColor: Colors.green.shade100,
+                      colorText: Colors.green.shade800,
+                      margin: const EdgeInsets.all(16),
+                      borderRadius: 8,
+                      icon: Icon(Icons.check_circle, color: Colors.green.shade600),
+                    );
+                  } else {
+                    print('⚠️ Language already selected: $languageName');
+                  }
+                },
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  curve: Curves.easeInOut,
+                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                  decoration: BoxDecoration(
+                    color: isSelected ? blueColor : Colors.transparent,
+                    borderRadius: BorderRadius.circular(10),
+                    boxShadow: isSelected ? [
+                      BoxShadow(
+                        color: blueColor.withOpacity(0.3),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      )
+                    ] : null,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        flag,
+                        style: const TextStyle(fontSize: 20),
+                      ),
+                      const SizedBox(width: 8),
+                      Flexible(
+                        child: Text(
+                          languageName,
+                          style: TextStyle(
+                            color: isSelected ? Colors.white : Colors.grey.shade700,
+                            fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                            fontSize: 14,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      if (isSelected) ...[
+                        const SizedBox(width: 4),
+                        Icon(
+                          Icons.check_circle,
+                          color: Colors.white,
+                          size: 16,
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+      );
+    });
   }
 }

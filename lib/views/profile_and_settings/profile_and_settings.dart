@@ -60,7 +60,7 @@ class ProfileAndSettings extends StatelessWidget {
                     const SizedBox(height: 12),
 
                     Text(
-                      user?.name ?? "No name available",
+                      user?.name ?? "no_name_available".tr,
                       style: TextStyle(
                         color: whiteColor,
                         fontWeight: FontWeight.bold,
@@ -78,27 +78,27 @@ class ProfileAndSettings extends StatelessWidget {
 
                     const SizedBox(height: 20),
 
-                    _buildOptionTile(Icons.person, "View / Edit Profile", () {
+                    _buildOptionTile(Icons.person, "view_edit_profile".tr, () {
                       Get.to(
                         ProfileView(
-                          name: user?.name ?? "No name is available",
-                          userName: user?.username ?? "No username is available",
-                          email: user?.email ?? "No email is available",
-                          mobileNo: user?.phone ?? "No phone number is available",
-                          bio: user?.bio ?? "No bio is available",
-                          street: user?.street ?? "No street is available",
-                          city: user?.city ?? "No city is available",
+                          name: user?.name ?? "no_name_available".tr,
+                          userName: user?.username ?? "no_username_available".tr,
+                          email: user?.email ?? "no_email_available".tr,
+                          mobileNo: user?.phone ?? "no_phone_available".tr,
+                          bio: user?.bio ?? "no_bio_available".tr,
+                          street: user?.street ?? "no_street_available".tr,
+                          city: user?.city ?? "no_city_available".tr,
                           imageUrl: user?.profilePicture ??
                               "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTGDSuK3gg8gojbS1BjnbA4NLTjMg_hELJbpQ&s",
                         ),
                       );
                     }),
 
-                    _buildOptionTile(Icons.list_alt, "My Listings", () {
+                    _buildOptionTile(Icons.list_alt, "my_listings".tr, () {
                       Get.to(MyListings());
                     }),
 
-                    _buildOptionTile(Icons.settings, "Settings", () {
+                    _buildOptionTile(Icons.settings, "settings".tr, () {
                       Get.to(Settings());
                     }),
 
@@ -108,7 +108,7 @@ class ProfileAndSettings extends StatelessWidget {
                       widthSize: 0.65,
                       heightSize: 0.06,
                       buttonColor: Colors.red,
-                      text: "Logout",
+                      text: "logout".tr,
                       textColor: whiteColor,
                       onPressed: () {
                         _showLogoutDialog(context);
@@ -154,8 +154,8 @@ class ProfileAndSettings extends StatelessWidget {
           child: IntrinsicHeight(
             child: Column(
               children: [
-                const Text(
-                  "Are you sure you want to log out?",
+                Text(
+                  "logout_confirmation".tr,
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -168,13 +168,13 @@ class ProfileAndSettings extends StatelessWidget {
                   children: [
                     TextButton(
                       onPressed: () => Get.back(),
-                      child: const Text("Cancel"),
+                      child: Text("cancel".tr),
                     ),
                     TextButton(
                       onPressed: () {
                         _authController.logout();
                       },
-                      child: const Text("Ok"),
+                      child: Text("ok".tr),
                     ),
                   ],
                 ),

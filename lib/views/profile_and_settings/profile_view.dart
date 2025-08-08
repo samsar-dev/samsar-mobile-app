@@ -100,7 +100,7 @@ class _ProfileViewState extends State<ProfileView> {
         backgroundColor: whiteColor,
         elevation: 0,
         title: Text(
-          "My Profile",
+          "my_profile".tr,
           style: TextStyle(
             color: blackColor,
             fontWeight: FontWeight.bold,
@@ -154,29 +154,29 @@ class _ProfileViewState extends State<ProfileView> {
 
                 const SizedBox(height: 20),
 
-               buildProfileField("Username", usernameController),
+               buildProfileField("username".tr, usernameController),
                 
                
-               buildProfileField("Email", emailController),
+               buildProfileField("email".tr, emailController),
                
               
-               buildProfileField("Phone No", phoneController),
+               buildProfileField("phone_no".tr, phoneController),
                 
                
-               buildProfileField("Bio", bioController),
+               buildProfileField("bio".tr, bioController),
               
                   
-              buildProfileField("Street", streetController),
+              buildProfileField("street".tr, streetController),
                 
              
-              buildProfileField("City", cityController),
+              buildProfileField("city".tr, cityController),
              
               const SizedBox(height: 22),
                 AppButton(
                   widthSize: 0.55,
                   heightSize: 0.06,
                   buttonColor: blueColor,
-                  text: isEditing ? "Save" : "Edit",
+                  text: isEditing ? "save".tr : "edit".tr,
                   textColor: whiteColor,
                   textSize: 22,
                   onPressed: () async {

@@ -9,6 +9,7 @@ class SettingsController extends GetxController {
   final AuthController _authController = Get.put(AuthController());
 
   RxBool isLoading = false.obs;
+  RxBool hasLoadedSettings = false.obs;
 
   RxBool allowMessaging = false.obs;
   RxBool listingNotifications = false.obs;
@@ -42,6 +43,7 @@ class SettingsController extends GetxController {
         showPhoneNumber.value = settings.data?.showPhoneNumber ?? false;
         privateProfile.value = settings.data?.privateProfile ?? false;
 
+        hasLoadedSettings.value = true;
         isLoading.value = false;
       }
       
@@ -91,9 +93,17 @@ class SettingsController extends GetxController {
       }
 
       if (result.isSuccess) {
+        // Settings were successfully saved to backend
+        // The local state should already reflect the changes since we're using the same values
+        print("✅ Settings successfully saved to backend");
+        
+        // Optionally refresh from server to confirm (but usually not needed)
+        // await getSettingsController();
+        
         showCustomSnackbar("Settings updated successfully", false);
       } else {
-        isLoading.value = false;
+        // If update failed, don't revert settings - keep local changes
+        print("❌ Settings update failed, keeping local changes");
         showCustomSnackbar("Failed to update settings: ${result.apiError?.message ?? 'Unknown error'}", true);
       }
     } catch (e) {
